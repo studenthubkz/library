@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": "20.x"
+    "node": "16.x"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
