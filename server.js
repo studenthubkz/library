@@ -523,11 +523,54 @@ const PORT = 3000; // Убедитесь, что ваш сервер слуша�
 // Запуск сервера
 server.listen(PORT, async () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);
+    
+    // Пытаемся получить локальный IP для доступа из локальной сети
+    const localIp = getLocalIp();
+    if (localIp !== 'localhost') {
+        console.log(`Доступен в локальной сети: http://${localIp}:${PORT}`);
+    }
 
+    // Пробуем запустить ngrok только если это необходимо для внешнего доступа
     try {
-        const url = await ngrok.connect(PORT);
-        console.log(`Публичный URL: ${url}`);
+        // Проверяем доступность ngrok API перед подключением
+        const ngrokAvailable = await checkNgrokAvailability();
+        
+        if (ngrokAvailable) {
+            const url = await ngrok.connect(PORT);
+            console.log(`Публичный URL через ngrok: ${url}`);
+        } else {
+            console.log('ngrok недоступен. Внешний URL не создан.');
+        }
     } catch (err) {
-        console.error('Ошибка при запуске ngrok:', err);
+        console.log('ngrok не используется. Сервер доступен только локально.');
+        // Продолжаем работу сервера без ngrok
     }
 });
+
+// Функция для проверки доступности ngrok API
+async function checkNgrokAvailability() {
+    try {
+        // Пытаемся сделать запрос к API ngrok, чтобы проверить его доступность
+        const http = require('http');
+        
+        return new Promise((resolve) => {
+            const req = http.request({
+                host: '127.0.0.1',
+                port: 4040,
+                path: '/api/tunnels',
+                method: 'GET',
+                timeout: 1000 // короткий таймаут
+            }, () => {
+                resolve(true); // Если запрос прошел, ngrok доступен
+            });
+            
+            req.on('error', () => {
+                resolve(false); // При любой ошибке считаем ngrok недоступным
+            });
+            
+            req.end();
+        });
+    } catch (error) {
+        return false;
+    }
+}
