@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн кітапхана - Заманауи</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+     /* Основные стили и переменные цветов */
+:root {
+    --primary-color: #8c6d46;
+    --primary-light: #d4a373;
+    --primary-dark: #5a3e2b;
+    --accent-color: #f9e4b7;
+    --background-color: #f9f4e8;
+    --text-color: #3c3c3c;
+    --success-color: #4bb71b;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
+    --transition-slow: all 0.5s ease;
+    --border-radius: 8px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: var(--transition-normal);
+}
+
+/* Улучшенный navbar с анимацией */
+.navbar {
+    background-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    padding: 15px 0;
+    transition: var(--transition-normal);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar.scrolled {
+    padding: 10px 0;
+    background-color: rgba(140, 109, 70, 0.95);
+    backdrop-filter: blur(5px);
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important;
+    font-weight: 500;
+    transition: var(--transition-normal);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img, .navbar-brand i {
+    margin-right: 8px;
+}
+
+.nav-link {
+    position: relative;
+    padding: 8px 15px !important;
+    margin: 0 5px;
+}
+
+.nav-link:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: var(--accent-color);
+    transition: var(--transition-normal);
+    transform: translateX(-50%);
+}
+
+.nav-link:hover {
+    color: var(--accent-color) !important;
+    transform: translateY(-2px);
+}
+
+.nav-link:hover:after, .nav-link.active:after {
+    width: 80%;
+}
+
+/* Улучшенный Hero section */
+.hero {
+    text-align: center;
+    padding: 100px 0;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                      url('https://www.northampton.ac.uk/wp-content/uploads/2018/02/alfons-morales-410757-unsplash.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #fff;
+    position: relative;
+    margin-bottom: 50px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeInDown 1s ease-out;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 1s ease-out 0.5s both;
+}
+
+/* Улучшенные карточки книг */
+.book-list {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+
+.book-item {
+    background-color: #fff;
+    padding: 20px;
+    width: 220px;
+    text-align: center;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.book-item img {
+    transition: var(--transition-slow);
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: calc(var(--border-radius) - 4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.book-item:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px);
+}
+
+.book-item:hover img {
+    transform: scale(1.05);
+}
+
+.book-item h3, .book-item h5 {
+    font-weight: 600;
+    margin-top: 15px;
+    font-size: 18px;
+    height: 50px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    color: var(--primary-dark);
+}
+
+.book-item p {
+    font-size: 14px;
+    color: var(--primary-light);
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.book-item .btn {
+    margin-top: 10px;
+    transition: var(--transition-normal);
+    width: 100%;
+}
+
+.book-item .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Улучшенные бейджи для платных книг */
+.paid-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--danger-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: var(--shadow-sm);
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+/* Улучшенные жанровые кнопки */
+.genre-button {
+    background-color: var(--primary-dark);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 8px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 15px;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.genre-button:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.genre-button.active {
+    background-color: var(--primary-light);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+    font-weight: bold;
+}
+
+/* Оверлей загрузки и анимации */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(212, 163, 115, 0.2);
+    border-top: 5px solid var(--primary-light);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: 20px;
+    font-size: 18px;
+    color: var(--primary-dark);
+    font-weight: 600;
+    text-align: center;
+}
+
+.loading-progress {
+    width: 200px;
+    height: 6px;
+    background-color: rgba(212, 163, 115, 0.2);
+    border-radius: 3px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.loading-progress-bar {
+    height: 100%;
+    background-color: var(--primary-light);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+
+/* Улучшенные уведомления */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--success-color);
+    color: white;
+    padding: 15px 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    transform: translateX(150%);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    max-width: 350px;
+}
+
+.notification-toast.show {
+    transform: translateX(0);
+}
+
+.notification-toast i {
+    margin-right: 12px;
+    font-size: 20px;
+}
+
+.notification-content {
+    font-weight: 500;
+}
+
+/* Улучшенное модальное окно книги */
+.modal-content {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: none;
+}
+
+.modal-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom: none;
+    padding: 15px 20px;
+}
+
+.modal-book-img {
+    max-height: 200px;
+    object-fit: contain;
+    margin: 0 auto 20px;
+    display: block;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* QR-код и оплата */
+.payment-qr-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    perspective: 1000px;
+}
+
+.payment-qr {
+    max-width: 100%;
+    border-radius: var(--border-radius);
+    transition: var(--transition-normal);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.payment-qr:hover {
+    transform: rotateY(10deg) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.qr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: var(--border-radius);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.qr-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Стиль для кнопок */
+.btn-primary {
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+    padding: 10px 20px;
+    transition: var(--transition-normal);
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: var(--transition-normal);
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: var (--shadow-sm);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    transition: var(--transition-normal);
+}
+
+.btn-success:hover {
+    background-color: #3d9714;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Минималистичная анимация галочки без вспышек */
+.checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 3;
+    stroke: var(--success-color);
+    stroke-miterlimit: 10;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: var(--success-color);
+    fill: none;
+    animation: stroke 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+/* Удаляем лишние анимации и оставляем только необходимые */
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Удаляем анимации scale и fill, которые создавали эффект вспышки */
+
+/* Удаляем success-rays, который создавал эффект лучей вокруг галочки */
+.success-rays {
+    display: none;
+}
+
+/* Анимация конфетти */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f00;
+    opacity: 0;
+    animation: confettiFall 3s ease-out forwards;
+}
+
+/* Анимация появления информации */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.4);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 87, 34, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes rotateCircle {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .hero {
+        padding: 60px 0;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+    }
+    
+    .book-item {
+        width: 160px;
+        padding: 15px;
+    }
+    
+    .book-item img {
+        max-height: 160px;
+    }
+    
+    .book-item h3, .book-item h5 {
+        font-size: 16px;
+        height: 45px;
+    }
+    
+    .genre-button {
+        padding: 8px 15px;
+        font-size: 13px;
+        margin: 5px;
+    }
+    
+    .payment-qr-container {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .checkmark {
+        width: 80px;
+        height: 80px;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Добавляем оверлей для загрузки -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Добавляем тост для уведомлений -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="notification-content">Операция успешно выполнена!</div>
+    </div>
+    
+    <div id="login-section">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">📚 Онлайн кітапхана</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#register">Тіркелу</a>
+                        </li>                    
+                        <li class="nav-item"><a class="nav-link" href="#contact">Байланыс</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Онлайн кітапханаға қош келдіңіз!</h1>
+            <p>Кітаптар әлемін ашыңыз</p>
+        </header>
+
+        <section id="register" class="container my-5 form-container">
+            <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+                <ul class="nav nav-tabs auth-tabs" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-content" type="button" role="tab" aria-controls="login-content" aria-selected="true">Кіру</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-content" type="button" role="tab" aria-controls="register-content" aria-selected="false">Тіркелу</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="authTabsContent">
+                    <!-- Вкладка входа -->
+                    <div class="tab-pane fade show active" id="login-content" role="tabpanel" aria-labelledby="login-tab">
+                        <h2 class="text-center mt-3">Кіру</h2>
+                        <form class="row g-3 mt-3" onsubmit="return validateLogin()">
+                            <div class="col-12">
+                                <label for="login-email" class="form-label">Логин:</label>
+                                <input type="text" class="form-control" id="login-email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="login-password" class="form-label">Құпия сөз:</label>
+                                <input type="password" class="form-control" id="login-password" required>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary w-100">Кіру</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Вкладка регистрации -->
+                    <div class="tab-pane fade" id="register-content" role="tabpanel" aria-labelledby="register-tab">
+                        <h2 class="text-center mt-3">Тіркелу</h2>
+                        <form class="row g-3 mt-3" onsubmit="return registerUser()">
+                            <div class="col-12">
+                                <label for="register-name" class="form-label">Аты-жөні:</label>
+                                <input type="text" class="form-control" id="register-name" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="register-email" class="form-label">Э-пошта:</label>
+                                <input type="email" class="form-control" id="register-email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="register-password" class="form-label">Құпия сөз:</label>
+                                <input type="password" class="form-control" id="register-password" required>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary w-100">Тіркелу</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="main-section">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">📚 Онлайн кітапхана</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showAllBooks()">Каталог</a>
+                            </li>                            
+
+                        </li>                    
+                        <li class="nav-item"><a class="nav-link" href="#contact">Байланыс</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Каталог бетіне қош келдіңіз!</h1>
+            <p>Кітаптар әлемін зерттеңіз</p>
+        </header>
+
+        <section id="search-banner" class="search-banner">
+            <div class="search-bar-container">
+                <input type="text" id="search-bar" placeholder="Кітаптың атын немесе авторды іздеңіз..." onkeyup="searchBooks()">
+                <button type="button" class="search-button">🔍</button>
+            </div>
+        </section>
+
+        <section id="popular-books" class="container my-5">
+            <h2 class="text-center">📚 Танымал кітаптар</h2>
+            <div class="book-list" id="popular-books-container"></div>
+        </section>        
+        
+        <section id="genre-selection" class="container my-5">
+            <h2 class="text-center">🎭 Жанрды таңдаңыз</h2>
+            <div class="genre-buttons text-center">
+            </div>
+        </section>
+
+        <div class="genres" id="genres">
+            
+        </div>
+
+        <div class="book-list" id="book-list">
+            
+        </div>
+
+
+        <section id="contact" class="container my-5">
+            <h2 class="text-center">Байланыс</h2>
+            <p class="text-center">Біздің мекен жайымыз: Алматы қ., Гоголя к-сі, 114-үй</p>
+            <p class="text-center">Байланыс телефон номері: +7 (747) 565-89-14</p>
+        </section>
+    </div>
+
+    
+    <!-- Модальное окно для подробной информации о книге -->
+    <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookModalLabel">Кітап туралы толығырақ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img id="modal-book-img" src="" alt="" class="modal-book-img img-fluid">
+                            <div id="modal-book-price-info" class="mt-3"></div>
+                        </div>
+                        <div class="col-md-8">
+                            <h3 id="modal-book-title" class="mb-2"></h3>
+                            <p id="modal-book-author" class="text-muted mb-3"></p>
+                            <h5>Кітап туралы:</h5>
+                            <p id="modal-book-description" class="book-description"></p>
+                            <div id="modal-book-action-container" class="mt-4">
+                                <a id="modal-book-link" href="#" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-book-open me-2"></i>Кітапты оқу
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для оплаты -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Кітапты сатып алу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h5 id="payment-book-title"></h5>
+                    <p id="payment-book-price"></p>
+                    <p>Төлем жасау үшін QR кодты сканерлеңіз:</p>
+                    <div class="position-relative">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://example.com/payment" alt="Payment QR Code" class="payment-qr">
+                        <div class="qr-overlay d-none position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Загрузка...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="simulate-scan" class="btn btn-primary me-2">QR Сканерлеуді имитациялау</button>
+                        <button id="confirm-payment" class="btn btn-success">Төлемді растау</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно успешной оплаты -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content success-modal">
+                <div class="modal-body text-center py-5">
+                    <div class="confetti-container" id="confetti-container"></div>
+                    <div class="success-animation">
+                        <div class="success-rays"></div>
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                    <h3 class="mt-4 mb-3">Төлем сәтті аяқталды!</h3>
+                    <p class="mb-4">Рахмет! Кітап сәтті сатып алынды. Енді сіз оны оқи аласыз.</p>
+                    <div class="d-flex justify-content-center">
+                        <button id="success-read-book" class="btn btn-primary me-2">
+                            <i class="fas fa-book-open me-2"></i>Кітапты оқу
+                        </button>
+                        <button id="success-close" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>Жабу
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение Socket.IO -->
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    // Переменные для хранения информации о пользователе
+    let currentUser = null;
+    let currentUserId = null;
+</script>
+
+    <script>
+        // Инициализация Socket.io
+        const socket = io();
+        
+        // Получение sessionId из URL, если есть
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        
+        const users = [
+            { email: 'aiibidildaeva@gmail.com', password: 'admin', name: 'Админ' }
+        ];
+        
+        // База данных купленных книг пользователями
+        const purchasedBooks = {};
+        
+        const books = [
+            { 
+                id: 1,
+                title: "Махаббат, қызық мол жылдар", 
+                author: "Әзілхан Нұршайықов", 
+                genre: "Романтика", 
+                description: "Махаббат, қызық мол жылдар — Әзілхан Нұршайықовтың қазақ әдебиетінің классикасына айналған туындысы. Бұл роман 1967 жылы алғаш рет жарық көріп, қазақ жастарының сүйікті кітабына айналды. Романның басты кейіпкерлері — студенттер мен жас адамдардың махаббат, достық, өмірдің түрлі қиындықтарын жеңіп шығу жолындағы күресі. Жазушы жастардың ішкі сезімдерін, олардың адамгершілік, адалдық, махаббат туралы түсініктерін терең әрі шынайы суреттейді.",
+                link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
+                image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg",
+                isPaid: true,
+                price: 1200
+            },
+            { 
+                id: 2,
+                title: "Абай Жолы", 
+                author: "Мұхтар Әуезов", 
+                genre: "Классика", 
+                description: "Абай жолы — қазақ әдебиетінің ұлы шығармаларының бірі, қазақ халқының классикалық әдебиетінің символы және қазақтың ұлы ақыны, ойшылы Абай Құнанбайұлының өмірі мен шығармашылығына арналған роман-эпопея. Абай жолы — төрт томнан тұратын күрделі эпопея, алғаш рет 1942 жылы жарияланған. Мұхтар Әуезов осы шығармасында Абайдың жеке өмірін, оның дүниетанымын, шығармашылығын, қазақ қоғамындағы өзгерістерді және сол кезеңдегі тарихи оқиғаларды терең бейнелейді.",
+                link: "https://predmet.kz/adebiet/%D0%BA%D1%96%D1%82%D0%B0%D0%BF%D1%82%D0%B0%D1%80/%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B6%D0%BE%D0%BB%D1%8B.1%20%D0%BA%D1%96%D1%82%D0%B0%D0%BF.pdf", 
+                image: "https://s.f.kz/prod/1540/1539578_1000.jpg",
+                isPaid: false,
+                price: 0
+            },
+            { 
+                id: 3,
+                title: "Қан мен Тер", 
+                author: "Әбдіжәміл Нұрпейісов", 
+                genre: "Классика", 
+                description: "Қан мен тер — қазақ әдебиетінің көрнекті шығармаларының бірі, жазушы Әбдіжәміл Нұрпейісовтің ең танымал туындысы. Роман алғаш рет 1970 жылы жарияланған және қазақ әдебиетінің классикалық туындыларының қатарына кіреді. Шығарма өзінің терең әлеуметтік және психологиялық мазмұнымен ерекшеленеді, қазақ халқының қиын кезеңдері мен халықтық тағдырдың шынайы суретін көрсетеді.",
+                link: "https://adebiportal.kz/upload/iblock/0d5/0d581f528880c6ae74bf3685d2ef0add.pdf", 
+                image: "https://balkhash.goo.kz/files/blog/1674232545216.jpg",
+                isPaid: true,
+                price: 1500
+            },
+            { 
+               id: 4,
+               title: "Ұшқан ұя", 
+               author: "Бауыржан Момышұлы", 
+               genre: "Әдеби", 
+               link: "https://adebiportal.kz/upload/iblock/5e1/5e13518fb629e466f3a930c56af4d672.pdf", 
+               description: "Ұшқан ұя — қазақ жазушысы Бауыржан Момышұлының өмірі мен шығармашылығын дәріптейтін көркем туынды. Бұл шығарма алғаш рет 1966 жылы жарық көрген және Бауыржан Момышұлының шығармаларының ішіндегі ең танымалы болып табылады. Роман жазушының өз балалық шағы, ата-анасы және өскен ортасы туралы бейнелі түрде баяндалады.",
+               image: "https://frankfurt.apollo.olxcdn.com/v1/files/a77ofbi5geuz-KZ/image",
+               isPaid: false,
+               price: 0
+            },
+            {
+               id: 5,
+               title: "Бақытсыз Жамал",
+               author: "Міржақов Дулатұлы", 
+               genre: "Романтика", 
+               link: "http://dev-s.balatili.kz/uploads/books/c440d23f5b0133c2199ed66e3fb01ffd/%D0%91%D0%90%D2%9A%D0%AB%D0%A2%D0%A1%D0%AB%D0%97%20%D0%96%D0%90%D0%9C%D0%90%D0%9B%20-%20%D0%A0%D0%BE%D0%BC%D0%B0%D0%9D.pdf", 
+               description: "Бақытсыз Жамал – бұл қазақ әдебиетінің классикалық туындыларының бірі, жазушы Міржақып Дулатұлының ең әйгілі шығармаларының қатарына жатады. Роман алғаш рет 1910 жылы жарық көрді. Шығарманың басты тақырыбы — қоғамдық қайшылықтар мен адамның ішкі әлемінің күресі, сондай-ақ әйелдердің қоғамдық орны мен бостандығы мәселелеріне арналған.",
+               image: "https://static.insales-cdn.com/images/products/1/4844/877253356/M_Dulatov_Baqytsyz_Jamal_pocketbook_COVER-16_curv.png",
+               isPaid: true,
+               price: 1000
+            },
+            {
+               id: 6,
+               title: "Ақбілек", 
+               author: "Жүсіпбек Аймауытов", 
+               genre: "Классика", 
+               link: "https://sauap.org/wp-content/uploads/2016/08/Zhusipbek_Aimauytov_Akbilek.pdf", 
+               description: "Ақбілек — қазақ жазушысы Жүсіпбек Аймауытовтың 1927 жылы жазылған романы. Бұл шығарма қазақ әдебиетінде әйелдер тағдыры, отбасылық өмір мен әлеуметтік мәселелерді терең қозғайтын шығармалардың бірі болып табылады.",
+               image: "https://sun9-69.userapi.com/impg/S9w-ZYE_vb3QtLUgsyVNdKOw1no-z7Jz4gWEsQ/cfDpfQnySe4.jpg?size=800x1188&quality=95&sign=2d179e5584f43f6c08985a9a8d9ce6dc&c_uniq_tag=SsAVXpFxo4WJL8u3j2P2GwfY_dNu-lTViTDy4OrUl1E&type=album",
+               isPaid: false,
+               price: 0
+            },
+            {
+               id: 7,
+               title: "Қаһар", 
+               author: "Ілияс Есенберлин", 
+               genre: "Тарихи", 
+               link: "https://pushkinlibrary.kz/exhibitions/esenberlin/docs/3.pdf", 
+               description: "Қаһар — қазақ жазушысы Ілияс Жансүгіровтың 1936 жылы жазылған романы. Бұл шығарма қазақ әдебиетінде әлеуметтік және саяси тақырыптарды терең қозғайтын маңызды шығармалардың бірі болып табылады. Романның негізінде қазақ халқының ұлттық тағдыры, социалистік қоғамның қалыптасу кезеңі, еңбек адамдарының қиыншылығы және ұлттық сезімдер жайлы мәселелер жатыр.",
+               image: "https://sun9-62.userapi.com/impf/c638927/v638927783/557a/9_ws_YkAJxw.jpg?size=582x807&quality=96&sign=593f5a08bab1259444179136179d9809&c_uniq_tag=PYg1a_Hvtz8sGncyjPDwi0mZkMdNtimQKC22iqtMQNg&type=album",
+               isPaid: true,
+               price: 1800
+            },
+            {
+               id: 8,
+               title: "Жусан иісі", 
+               author: "Сайын Мұратбеков", 
+               genre: "Тарихи", 
+               link: "https://pushkinlibrary.kz/exhibitions/Muratbekov_kaz/images/Muratbekov_Zhusan_iisi.pdf", 
+               description: "Жусан исі — қазақ жазушысы Сұлтанәлі Балғабаевтың 2006 жылы жазылған романы. Бұл шығарма қазақ қоғамының өткен мен қазіргі кезеңіндегі күрделі мәселелерді қарастырып, сонымен қатар адам жанындағы терең сезімдер мен рухани ізденістерге арналады. Романның негізгі тақырыбы — адамның өз болмысын түсініп, ішкі жан дүниесінде тыныштық табуға ұмтылуы.",
+               image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1548241221i/43687798.jpg",
+               isPaid: false,
+               price: 0
+            }
+        ];
+
+        // Обновление популярных книг с учетом статуса платности
+        const popularBooks = [
+            { 
+                title: "Махаббат, қызық мол жылдар", 
+                author: "Әзілхан Нұршайықов", 
+                genre: "Романтика", 
+                description: "Бұл кітап жастардың махаббаты мен өмірлік қиындықтарын суреттейді.",
+                link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
+                image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg",
+                isPaid: true,
+                price: 1200
+            },
+            { 
+                title: "Абай жолы", 
+                author: "Мұхтар Әуезов", 
+                genre: "Классика", 
+                description: "Қазақтың ұлы ақыны Абай Құнанбайұлы туралы тарихи роман.",
+                link: "https://example.com/abai-zholy.pdf",
+                image: "https://kitap.kz/storage/books/AbaiZholy.jpg",
+                isPaid: false,
+                price: 0
+            }
+        ];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            displayPopularBooks();
+            displayGenres();
+            
+            // Проверяем наличие sessionId для присоединения к комнате сессии оплаты
+            if (sessionId) {
+                socket.emit('join-payment-session', sessionId);
+            }
+            
+            // Обрабатываем события обновления статуса оплаты
+            socket.on('payment-status-changed', function(data) {
+                console.log('Получено обновление статуса платежа:', data);
+                
+                // Если статус "completed", обновляем список купленных книг
+                if (data.status === 'completed' && currentUser) {
+                    // Добавляем книгу в список купленных
+                    if (!purchasedBooks[currentUser]) {
+                        purchasedBooks[currentUser] = [];
+                    }
+                    
+                    const purchasedBook = books.find(book => book.id === data.bookId);
+                    const bookTitle = purchasedBook?.title;
+                    
+                    if (bookTitle && !purchasedBooks[currentUser].includes(bookTitle)) {
+                        purchasedBooks[currentUser].push(bookTitle);
+                        
+                        // Показываем модальное окно успешной оплаты
+                        if (purchasedBook) {
+                            // Закрываем все другие модальные окна
+                            const openModals = document.querySelectorAll('.modal.show');
+                            openModals.forEach(modal => {
+                                const instance = bootstrap.Modal.getInstance(modal);
+                                if (instance) instance.hide();
+                            });
+                            
+                            // Анимация конфетти для эффекта успешной оплаты
+                            createConfetti();
+                            
+                            // Показываем модальное окно успешной оплаты
+                            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
+                            
+                            // Настраиваем обработчик для закрытия модального окна
+                            document.getElementById('success-close').onclick = function() {
+                                successModal.hide();
+                            };
+                            
+                            // Настраиваем обработчик для кнопки "Читать книгу"
+                            document.getElementById('success-read-book').onclick = function() {
+                                successModal.hide();
+                                window.open(purchasedBook.link, '_blank');
+                            };
+                        } else {
+                            // Если информация о книге недоступна, показываем только уведомление
+                            showNotification(`Новая книга успешно куплена!`, 'success', 5000);
+                        }
+                        
+                        // Обновляем отображение книг
+                        const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
+                        if (currentGenre && currentGenre !== "Барлық кітаптар") {
+                            filterByGenre(currentGenre);
+                        } else {
+                            displayBooks(books);
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Функция для получения книг с сервера
+        function fetchBooks() {
+            fetch('/api/books')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Обновляем локальный массив книг
+                        books.length = 0;
+                        books.push(...data.books);
+                        
+                        // Обновляем отображение
+                        displayBooks(books);
+                        displayGenres();
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении списка книг:', error);
+                });
+        }
+        
+        // Функция для регистрации пользователя
+        function registerUser() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            // Показываем загрузку
+            showLoading();
+            
+            // Отправляем запрос на регистрацию
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    showNotification('Тіркелу сәтті аяқталды!');
+                    
+                    // Переключаемся на вкладку входа
+                    document.getElementById('login-tab').click();
+                } else {
+                    alert(data.message || 'Тіркелу кезінде қате орын алды.');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при регистрации:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
+            
+            return false;
+        }
+
+        // Функция для входа пользователя
+        function validateLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Показываем загрузку
+            showLoading();
+            
+            // Отправляем запрос на вход
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    currentUser = data.user.email;
+                    currentUserId = data.user.id;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('main-section').style.display = 'block';
+                    
+                    fetchUserBooks(currentUserId);
+                    
+                    showNotification(`Қош келдіңіз, ${data.user.name}!`);
+                } else {
+                    alert(data.message || 'Қате логин немесе құпия сөз!');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при входе:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
+            
+            return false;
+        }
+        
+        // Функция для получения купленных книг пользователя
+        function fetchUserBooks(userId) {
+            if (!userId) return;
+            
+            fetch(`/api/user-books/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Инициализируем массив для текущего пользователя
+                        if (!purchasedBooks[currentUser]) {
+                            purchasedBooks[currentUser] = [];
+                        }
+                        
+                        // Добавляем книги в список купленных
+                        data.books.forEach(book => {
+                            if (!purchasedBooks[currentUser].includes(book.title)) {
+                                purchasedBooks[currentUser].push(book.title);
+                            }
+                        });
+                        
+                        // Обновляем отображение книг
+                        const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
+                        if (currentGenre && currentGenre !== "Барлық кітаптар") {
+                            filterByGenre(currentGenre);
+                        } else {
+                            displayBooks(books);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении списка купленных книг:', error);
+                });
+        }
+
+        // Функция поиска книг
+        function searchBooks() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const results = books.filter(book => book.title.toLowerCase().includes(query) || book.author.toLowerCase().includes(query));
+            displayBooks(results);
+        }
+        
+        // Функция фильтрации по жанру
+        function filterByGenre(genre) {
+            const filteredBooks = books.filter(book => book.genre === genre);
+            displayBooks(filteredBooks);
+        }
+
+        // Функция отображения списка книг
+        function displayBooks(filteredBooks) {
+            const bookList = document.getElementById('book-list');
+            bookList.innerHTML = '';
+
+            if (filteredBooks.length > 0) {
+                filteredBooks.forEach(book => {
+                    const bookItem = document.createElement('div');
+                    bookItem.classList.add('book-item');
+                    
+                    // Добавляем бейдж для платных книг
+                    let paidBadge = '';
+                    if (book.isPaid) {
+                        paidBadge = `<span class="paid-badge">${book.price} ₸</span>`;
+                    }
+                    
+                    bookItem.innerHTML = `
+                        ${paidBadge}
+                        <img src="${book.image}" alt="${book.title}" class="img-fluid">
+                        <h5>${book.title}</h5>
+                        <p>${book.author}</p>
+                        <button class="btn btn-secondary" onclick="showBookDetails(${book.id || `'${book.title}'`})">Толығырақ</button>`;
+                    bookList.appendChild(bookItem);
+                });
+            } else {
+                bookList.innerHTML = '<p>Ештеңе табылмады</p>';
+            }
+        }
+
+        // Функция отображения деталей книги
+        function showBookDetails(bookIdOrTitle) {
+            // Находим книгу по ID или заголовку
+            let book;
+            if (typeof bookIdOrTitle === 'number') {
+                book = books.find(b => b.id === bookIdOrTitle);
+            } else {
+                book = books.find(b => b.title === bookIdOrTitle);
+            }
+            
+            if (!book) {
+                showNotification('Книга не найдена', 'error');
+                return;
+            }
+            
+            // Добавляем эффект загрузки
+            showLoading();
+            
+            setTimeout(() => {
+                document.getElementById('modal-book-title').textContent = book.title;
+                document.getElementById('modal-book-author').textContent = `Автор: ${book.author}`;
+                document.getElementById('modal-book-description').textContent = book.description;
+                
+                const priceInfoElement = document.getElementById('modal-book-price-info');
+                const actionContainer = document.getElementById('modal-book-action-container');
+                
+                // Очищаем контейнеры перед добавлением новой информации
+                priceInfoElement.innerHTML = '';
+                actionContainer.innerHTML = '';
+                
+                if (book.isPaid) {
+                    // Проверяем, купил ли пользователь эту книгу
+                    const hasPurchased = currentUser && purchasedBooks[currentUser] && 
+                                        purchasedBooks[currentUser].includes(book.title);
+                    
+                    if (hasPurchased) {
+                        priceInfoElement.innerHTML = '<p class="text-success"><i class="fas fa-check-circle me-2"></i>Сатып алынған</p>';
+                        actionContainer.innerHTML = `<a href="${book.link}" target="_blank" class="btn btn-primary"><i class="fas fa-book-open me-2"></i>Кітапты оқу</a>`;
+                    } else {
+                        priceInfoElement.innerHTML = `<p>Бағасы: <strong>${book.price} ₸</strong></p>`;
+                        actionContainer.innerHTML = `
+                            <button class="btn btn-success" onclick="createPaymentSession(${book.id})"><i class="fas fa-shopping-cart me-2"></i>Сатып алу</button>
+                        `;
+                    }
+                } else {
+                    priceInfoElement.innerHTML = '<p class="text-info"><i class="fas fa-gift me-2"></i>Тегін кітап</p>';
+                    actionContainer.innerHTML = `<a href="${book.link}" target="_blank" class="btn btn-primary"><i class="fas fa-book-open me-2"></i>Кітапты оқу</a>`;
+                }
+                
+                showLoading(false);
+                const bookModal = new bootstrap.Modal(document.getElementById('bookModal'));
+                bookModal.show();
+            }, 500);
+        }
+
+        // Функция создания платежной сессии
+        function createPaymentSession(bookId) {
+            if (!currentUser || !currentUserId) {
+                alert('Кітапты сатып алу үшін жүйеге кіру қажет');
+                return;
+            }
+            
+            // Показываем эффект загрузки
+            showLoading();
+            
+            // Создаем новую платежную сессию
+            fetch('/api/payment-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    userId: currentUserId,
+                    bookId: bookId
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    // Если книга уже куплена
+                    if (data.alreadyPurchased) {
+                        showNotification('Бұл кітап бұрын сатып алынған');
+                        
+                        // Обновляем список купленных книг
+                        fetchUserBooks(currentUserId);
+                        
+                        // Закрываем модальное окно с деталями книги
+                        const bookModal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+                        bookModal.hide();
+                        
+                        return;
+                    }
+                    
+                    // Показываем модальное окно оплаты
+                    showPaymentModal(bookId, data.sessionId, data.userId);
+                } else {
+                    alert(data.message || 'Төлем сессиясын жасау кезінде қате орын алды');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при создании платежной сессии:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
+        }
+
+        // Функция показа модального окна оплаты
+        function showPaymentModal(bookId, sessionId, userId) {
+            const book = books.find(b => b.id === bookId);
+            
+            if (!book) {
+                showNotification('Книга не найдена', 'error');
+                return;
+            }
+            
+            // Закрываем модальное окно с деталями книги
+            const bookModal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+            bookModal.hide();
+            
+            // Показываем эффект загрузки
+            showLoading();
+            
+            setTimeout(() => {
+                // Заполняем данные о книге в модальном окне оплаты
+                document.getElementById('payment-book-title').textContent = book.title;
+                document.getElementById('payment-book-price').textContent = `Бағасы: ${book.price} ₸`;
+                
+                // Определяем базовый URL в зависимости от окружения
+                const baseUrl = window.location.origin;
+                
+                // Присоединяемся к комнате сессии оплаты
+                socket.emit('join-payment-session', sessionId);
+                
+                // Сохраняем информацию о текущей сессии оплаты
+                window.currentPaymentSession = {
+                    sessionId: sessionId,
+                    bookId: bookId,
+                    bookTitle: book.title,
+                    status: 'pending'
+                };
+                
+                // Создаем уникальную ссылку для оплаты с параметрами книги и сессией
+                const paymentUrl = `${baseUrl}/payment.html?book=${encodeURIComponent(book.title)}&price=${book.price}&user=${encodeURIComponent(currentUser)}&session=${sessionId}&bookId=${bookId}&userId=${userId}`;
+                
+                // Обновляем QR-код с ссылкой на страницу оплаты
+                document.querySelector('.payment-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentUrl)}`;
+                
+                // Настраиваем обработчик для кнопки имитации сканирования QR-кода
+                document.getElementById('simulate-scan').onclick = function() {
+                    // Показываем оверлей загрузки
+                    document.querySelector('.qr-overlay').classList.remove('d-none');
+                    
+                    // Имитируем задержку сканирования
+                    setTimeout(() => {
+                        // Открываем страницу оплаты в новом окне/вкладке
+                        window.open(paymentUrl, '_blank');
+                        document.querySelector('.qr-overlay').classList.add('d-none');
+                    }, 1500);
+                };
+                
+                // Настраиваем обработчик для кнопки подтверждения оплаты
+                document.getElementById('confirm-payment').onclick = function() {
+                    completePayment(sessionId);
+                };
+                
+                showLoading(false);
+                
+                // Показываем модальное окно оплаты
+                const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                paymentModal.show();
+            }, 500);
+        }
+        
+        // Функция завершения оплаты
+        function completePayment(sessionId) {
+            // Показываем эффект загрузки
+            showLoading(true, 'Обработка платежа...');
+            
+            // Обновляем статус платежной сессии
+            fetch('/api/payment-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    sessionId: sessionId,
+                    status: 'completed'
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    // Получаем информацию о книге
+                    const currentBook = books.find(book => book.id === window.currentPaymentSession.bookId);
+                    
+                    // Закрываем модальное окно оплаты
+                    const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                    paymentModal.hide();
+                    
+                    // Создаем анимацию конфетти
+                    createConfetti();
+                    
+                    // Показываем модальное окно успешной оплаты
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                    // Показываем уведомление
+                    showNotification(`Кітап сәтті сатып алынды!`, 'success', 5000);
+                    
+                    // Обновляем список купленных книг
+                    fetchUserBooks(currentUserId);
+                    
+                    // Настраиваем обработчик для закрытия модального окна успешной оплаты
+                    document.getElementById('success-close').onclick = function() {
+                        successModal.hide();
+                    };
+                    
+                    // Настраиваем обработчик для кнопки "Читать книгу"
+                    document.getElementById('success-read-book').onclick = function() {
+                        successModal.hide();
+                        if (currentBook) {
+                            window.open(currentBook.link, '_blank');
+                        }
+                    };
+                } else {
+                    alert(data.message || 'Төлемді аяқтау кезінде қате орын алды');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при завершении оплаты:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
+        }
+        
+        // Улучшенная функция для показа/скрытия индикатора загрузки
+        function showLoading(show = true, message = 'Загрузка...') {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Добавляем сообщение и прогресс-бар если их еще нет
+            if (!document.querySelector('.loading-text')) {
+                const loadingText = document.createElement('div');
+                loadingText.className = 'loading-text';
+                loadingText.textContent = message;
+                
+                const progressContainer = document.createElement('div');
+                progressContainer.className = 'loading-progress';
+                
+                const progressBar = document.createElement('div');
+                progressBar.className = 'loading-progress-bar';
+                
+                progressContainer.appendChild(progressBar);
+                loadingOverlay.appendChild(loadingText);
+                loadingOverlay.appendChild(progressContainer);
+            } else {
+                document.querySelector('.loading-text').textContent = message;
+            }
+            
+            if (show) {
+                loadingOverlay.classList.add('show');
+                
+                // Анимируем прогресс-бар
+                const progressBar = document.querySelector('.loading-progress-bar');
+                progressBar.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressBar.style.width = '60%';
+                }, 300);
+                
+                setTimeout(() => {
+                    progressBar.style.width = '80%';
+                }, 600);
+            } else {
+                // Завершаем анимацию прогресс-бара
+                const progressBar = document.querySelector('.loading-progress-bar');
+                progressBar.style.width = '100%';
+                
+                // Задержка перед скрытием оверлея
+                setTimeout(() => {
+                    loadingOverlay.classList.remove('show');
+                    setTimeout(() => {
+                        progressBar.style.width = '0%';
+                    }, 300);
+                }, 500);
+            }
+        }
+
+        // Улучшенная функция для показа уведомлений
+        function showNotification(message, type = 'success', duration = 3000) {
+            const toast = document.getElementById('notificationToast');
+            const content = toast.querySelector('.notification-content');
+            
+            // Устанавливаем иконку в зависимости от типа уведомления
+            let icon = '';
+            if (type === 'error') {
+                toast.style.backgroundColor = 'var(--danger-color)';
+                icon = '<i class="fas fa-exclamation-circle"></i>';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = 'var(--warning-color)';
+                toast.style.color = '#333';
+                icon = '<i class="fas fa-exclamation-triangle"></i>';
+            } else {
+                toast.style.backgroundColor = 'var(--success-color)';
+                icon = '<i class="fas fa-check-circle"></i>';
+            }
+            
+            content.innerHTML = `${icon} ${message}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // Функция для показа/скрытия индикатора загрузки
+        function showLoading(show = true) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (show) {
+                loadingOverlay.classList.add('show');
+            } else {
+                loadingOverlay.classList.remove('show');
+            }
+        }
+        
+        // Функция для показа уведомлений
+        function showNotification(message, type = 'success', duration = 3000) {
+            const toast = document.getElementById('notificationToast');
+            
+            // Устанавливаем цвет в зависимости от типа уведомления
+            if (type === 'error') {
+                toast.style.backgroundColor = '#dc3545';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#ffc107';
+                toast.style.color = '#333';
+            } else {
+                toast.style.backgroundColor = '#4bb71b';
+            }
+            
+            toast.querySelector('.notification-content').textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // Функция создания конфетти для анимации успешной оплаты
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = ''; // Очищаем контейнер
+            
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', 
+                            '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', 
+                            '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722'];
+            
+            // Создаем 100 конфетти с разными цветами
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Случайная позиция, размер и время анимации
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.opacity = (Math.random() * 0.5) + 0.5;
+                confetti.style.animationDuration = (Math.random() * 3) + 2 + 's';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                
+                // Случайная форма конфетти
+                if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '50%';
+                } else if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '0';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                } else {
+                    confetti.style.width = '8px';
+                    confetti.style.height = '8px';
+                    confetti.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+                }
+                
+                container.appendChild(confetti);
+            }
+        }
+        
+        // Обработчик для выделения активной жанровой кнопки
+        function highlightActiveGenre(genreElement) {
+            // Удаляем класс active у всех кнопок жанров
+            document.querySelectorAll('.genres .genre-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Добавляем класс active выбранной кнопке
+            genreElement.classList.add('active');
+        }
+
+        // Обновляем функции для работы с активным жанром
+        function displayGenres() {
+            const genres = [...new Set(books.map(book => book.genre))];
+            const genresContainer = document.getElementById('genres');
+            genresContainer.innerHTML = '';
+
+            // Кнопка "Барлық кітаптар" (Все книги)
+            const allBooksButton = document.createElement('button');
+            allBooksButton.textContent = "Барлық кітаптар";
+            allBooksButton.classList.add('genre-button', 'active'); // По умолчанию активна
+            allBooksButton.onclick = function() {
+                displayBooks(books);
+                highlightActiveGenre(this);
+            }
+            genresContainer.appendChild(allBooksButton);
+
+            // Создание кнопок жанров
+            genres.forEach(genre => {
+                const button = document.createElement('button');
+                button.textContent = genre;
+                button.classList.add('genre-button');
+                button.onclick = function() {
+                    filterByGenre(genre);
+                    highlightActiveGenre(this);
+                }
+                genresContainer.appendChild(button);
+            });
+
+            // Показываем все книги по умолчанию
+            displayBooks(books);
+        }
+
+        function showAllBooks() {
+            displayBooks(books); // Отобразить все книги
+            window.scrollTo({ top: document.getElementById('book-list').offsetTop, behavior: 'smooth' }); // Прокрутить к книгам
+        }
+
+        function displayPopularBooks() {
+            const popularBooksContainer = document.getElementById('popular-books-container');
+            popularBooksContainer.innerHTML = '';
+
+            popularBooks.forEach(book => {
+                const bookItem = document.createElement('div');
+                bookItem.classList.add('book-item'); // Добавляем класс оформления книги
+                
+                // Добавляем бейдж для платных книг
+                let paidBadge = '';
+                if (book.isPaid) {
+                    paidBadge = `<span class="paid-badge">${book.price} ₸</span>`;
+                }
+                
+                bookItem.innerHTML = `
+                    ${paidBadge}
+                    <img src="${book.image}" class="img-fluid" alt="${book.title}">
+                    <h3>${book.title}</h3>
+                    <p>${book.author}</p>
+                    <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>
+                `;
+                popularBooksContainer.appendChild(bookItem);
+            });
+        }
+    </script>
+
+    <!-- Заменили на CDN FontAwesome с поддержкой CORS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "ngrok": "^5.0.0-beta.2",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "websocket": "^1.0.35",
+    "ws": "^8.18.1"
+  }
+}

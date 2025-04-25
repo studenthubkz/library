@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата - Онлайн кітапхана</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f4e8;
+            color: #3c3c3c;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .payment-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .book-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .book-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #5a3e2b;
+            margin-bottom: 5px;
+        }
+        
+        .book-price {
+            font-size: 20px;
+            color: #d4a373;
+            font-weight: 500;
+        }
+        
+        .payment-methods {
+            margin: 20px 0;
+        }
+        
+        .payment-method {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover, .payment-method.active {
+            border-color: #d4a373;
+            background-color: #f5e6cc;
+        }
+        
+        .payment-method.active {
+            border-width: 2px;
+        }
+        
+        .payment-details {
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            background-color: #d4a373;
+            border-color: #d4a373;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c48c52;
+            border-color: #c48c52;
+        }
+        
+        .form-control:focus {
+            border-color: #d4a373;
+            box-shadow: 0 0 5px rgba(212, 163, 115, 0.5);
+        }
+        
+        .card-image {
+            max-width: 100%;
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .success-animation {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .checkmark {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #4bb71b;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #4bb71b;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #4bb71b;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+        
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 30px #4bb71b;
+            }
+        }
+        
+        .success-rays {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            z-index: 1;
+        }
+        
+        .success-rays:before, .success-rays:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: #4bb71b;
+            border-bottom-color: #4bb71b;
+            animation: rotateCircle 2s linear infinite;
+        }
+        
+        .success-rays:after {
+            border-top-color: #d4a373;
+            border-bottom-color: #d4a373;
+            animation-duration: 3s;
+        }
+        
+        @keyframes rotateCircle {
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+        
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #d4a373;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loader-message {
+            color: #5a3e2b;
+            font-size: 18px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        .loader-progress {
+            width: 200px;
+            height: 6px;
+            background-color: #f3f3f3;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #d4a373;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .payment-success-card {
+            animation: successCardAppear 0.8s ease forwards;
+            transform-origin: center;
+            opacity: 0;
+        }
+        
+        @keyframes successCardAppear {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .success-message {
+            animation: fadeInUp 0.6s ease 0.5s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card-icon {
+            display: inline-block;
+            margin-right: 5px;
+            animation: cardIconPulse 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes cardIconPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        
+        .payment-method.active {
+            border-width: 2px;
+            animation: selectedPaymentPulse 2s infinite;
+        }
+        
+        @keyframes selectedPaymentPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(212, 163, 115, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(212, 163, 115, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Оверлей для загрузки с улучшенной анимацией -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loader-message" id="loaderMessage">Төлем өңделуде...</div>
+        <div class="loader-progress">
+            <div class="loader-progress-bar" id="loaderProgressBar"></div>
+        </div>
+    </div>
+    
+    <div class="container" id="payment-content">
+        <div class="payment-container" id="payment-form">
+            <div class="book-info">
+                <h1 class="book-title" id="book-title">Загрузка данных...</h1>
+                <div class="book-price" id="book-price"></div>
+                <p class="text-muted mt-2" id="user-info"></p>
+            </div>
+            
+            <div class="payment-methods">
+                <h5>Төлем әдісін таңдаңыз:</h5>
+                <div class="payment-method active" onclick="selectPaymentMethod(this, 'card')">
+                    <div class="d-flex align-items-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Кредитная карта" class="card-image">
+                        <span>Кредиттік/дебеттік карта</span>
+                    </div>
+                </div>
+                <div class="payment-method" onclick="selectPaymentMethod(this, 'kaspi')">
+                    <div class="d-flex align-items-center">
+                        <img src="https://play-lh.googleusercontent.com/VhOHKfhODiZ1FOobLOaVhJLQkUVnrNZZ5Xc5S1QxiMvYAOeL4TkSHlZxZp4_BLs0dg" alt="Kaspi" class="card-image">
+                        <span>Kaspi QR/Kaspi Pay</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-details" id="card-details">
+                <div class="mb-3">
+                    <label for="card-number" class="form-label">Карта нөмірі:</label>
+                    <input type="text" class="form-control" id="card-number" placeholder="XXXX XXXX XXXX XXXX">
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="expiry-date" class="form-label">Мерзімі:</label>
+                        <input type="text" class="form-control" id="expiry-date" placeholder="MM/YY">
+                    </div>
+                    <div class="col">
+                        <label for="cvv" class="form-label">CVV:</label>
+                        <input type="password" class="form-control" id="cvv" placeholder="XXX">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="card-holder" class="form-label">Карта иесінің аты-жөні:</label>
+                    <input type="text" class="form-control" id="card-holder" placeholder="IVAN IVANOV">
+                </div>
+            </div>
+            
+            <div class="payment-details d-none" id="kaspi-details">
+                <div class="text-center">
+                    <p>Kaspi QR-кодты сканерлеңіз немесе Kaspi Pay-ді пайдаланыңыз:</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=kaspi://transfer?token=example" alt="Kaspi QR код" class="img-fluid my-3" style="max-width: 200px;">
+                    <p class="text-muted">Телефонда Kaspi QR сканерлеуді немесе Kaspi Pay пайдаланып төлемді аяқтаңыз</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button type="button" class="btn btn-primary" onclick="processPayment()">Төлемді аяқтау</button>
+            </div>
+        </div>
+        
+        <div class="payment-container d-none payment-success-card" id="success-container">
+            <div class="success-animation">
+                <div class="success-rays"></div>
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <div class="text-center success-message">
+                <h3>Төлем сәтті! <span class="card-icon">💳</span></h3>
+                <p id="success-message">Төлеміңіз сәтті өңделді.</p>
+                <p>Кітап сатып алынғаннан кейін, ол сіздің "Менің кітаптарым" бөліміңізге автоматты түрде қосылады.</p>
+                <a href="/" class="btn btn-primary mt-3">Басты бетке оралу</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Socket.io
+        const socket = io();
+        
+        // Получаем параметры из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookTitle = urlParams.get('book');
+        const bookPrice = urlParams.get('price');
+        const userData = urlParams.get('user');
+        const sessionId = urlParams.get('session');
+        const bookId = urlParams.get('bookId');
+        const userId = urlParams.get('userId');
+        
+        // Текущий выбранный способ оплаты
+        let currentPaymentMethod = 'card';
+        
+        // Устанавливаем информацию о книге и пользователе
+        document.addEventListener('DOMContentLoaded', function() {
+            if (bookTitle) {
+                document.getElementById('book-title').textContent = bookTitle;
+            }
+            
+            if (bookPrice) {
+                document.getElementById('book-price').textContent = `Бағасы: ${bookPrice} ₸`;
+            }
+            
+            if (userData) {
+                document.getElementById('user-info').textContent = `Қолданушы: ${userData}`;
+            }
+            
+            // Проверяем параметры сессии
+            if (sessionId) {
+                // Присоединяемся к комнате сессии оплаты
+                socket.emit('join-payment-session', sessionId);
+                
+                // Получаем текущий статус сессии с сервера
+                fetch(`/api/payment-session/${sessionId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.session) {
+                            // Если статус уже "completed", показываем экран успешной оплаты
+                            if (data.session.status === 'completed') {
+                                showPaymentSuccess();
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при получении информации о сессии:', error);
+                    });
+            }
+            
+            // Добавляем автоформатирование номера карты
+            const cardNumberInput = document.getElementById('card-number');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 16) value = value.slice(0, 16);
+                    
+                    // Добавляем пробелы каждые 4 цифры
+                    const formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                    e.target.value = formatted;
+                });
+            }
+            
+            // Добавляем автоформатирование срока действия
+            const expiryDateInput = document.getElementById('expiry-date');
+            if (expiryDateInput) {
+                expiryDateInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 4) value = value.slice(0, 4);
+                    
+                    if (value.length > 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2);
+                    }
+                    
+                    e.target.value = value;
+                });
+            }
+        });
+        
+        // Функция выбора способа оплаты
+        function selectPaymentMethod(element, method) {
+            // Удаляем класс active у всех методов оплаты
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Добавляем класс active выбранному методу
+            element.classList.add('active');
+            
+            // Обновляем текущий метод оплаты
+            currentPaymentMethod = method;
+            
+            // Скрываем все формы деталей оплаты
+            document.querySelectorAll('.payment-details').forEach(el => {
+                el.classList.add('d-none');
+            });
+            
+            // Показываем форму деталей выбранного метода оплаты
+            document.getElementById(`${method}-details`).classList.remove('d-none');
+        }
+        
+        // Функция обработки платежа с улучшенной анимацией
+        function processPayment() {
+            // Показываем индикатор загрузки
+            showLoading(true);
+            
+            // Валидация данных в зависимости от выбранного метода оплаты
+            if (currentPaymentMethod === 'card') {
+                const cardNumber = document.getElementById('card-number').value.trim();
+                const expiryDate = document.getElementById('expiry-date').value.trim();
+                const cvv = document.getElementById('cvv').value.trim();
+                const cardHolder = document.getElementById('card-holder').value.trim();
+                
+                // Простая валидация (в реальном проекте должна быть более сложная)
+                if (!cardNumber || !expiryDate || !cvv || !cardHolder) {
+                    alert('Барлық өрістерді толтырыңыз');
+                    showLoading(false);
+                    return;
+                }
+            }
+            
+            // Эмулируем этапы обработки платежа с анимацией прогресса
+            updateLoaderMessage('Төлем деректері тексерілуде...');
+            updateProgressBar(20);
+            
+            setTimeout(() => {
+                updateLoaderMessage('Банкпен байланысу...');
+                updateProgressBar(40);
+                
+                setTimeout(() => {
+                    updateLoaderMessage('Төлемді өңдеу...');
+                    updateProgressBar(70);
+                    
+                    setTimeout(() => {
+                        updateLoaderMessage('Төлем аяқталуда...');
+                        updateProgressBar(90);
+                        
+                        // Обновляем статус платежа на сервере
+                        fetch('/api/payment-status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ 
+                                sessionId: sessionId,
+                                status: 'completed'
+                            }),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            updateProgressBar(100);
+                            
+                            setTimeout(() => {
+                                showLoading(false);
+                                
+                                if (data.success) {
+                                    // Отправляем уведомление через WebSocket
+                                    socket.emit('payment-status-update', {
+                                        sessionId: sessionId,
+                                        status: 'completed',
+                                        bookId: parseInt(bookId),
+                                        userId: parseInt(userId)
+                                    });
+                                    
+                                    // Показываем экран успешной оплаты
+                                    showPaymentSuccess();
+                                } else {
+                                    alert(data.message || 'Төлем кезінде қате орын алды');
+                                }
+                            }, 500);
+                        })
+                        .catch(error => {
+                            showLoading(false);
+                            console.error('Ошибка при обновлении статуса платежа:', error);
+                            alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+                        });
+                    }, 700);
+                }, 800);
+            }, 600);
+        }
+        
+        // Функция для обновления сообщения загрузчика
+        function updateLoaderMessage(message) {
+            document.getElementById('loaderMessage').textContent = message;
+        }
+        
+        // Функция для обновления индикатора прогресса
+        function updateProgressBar(percent) {
+            document.getElementById('loaderProgressBar').style.width = `${percent}%`;
+        }
+        
+        // Функция показа экрана успешной оплаты с анимацией конфетти
+        function showPaymentSuccess() {
+            // Обновляем сообщение об успешной оплате
+            document.getElementById('success-message').textContent = `"${bookTitle}" кітабы үшін төлеміңіз сәтті өңделді.`;
+            
+            // Скрываем форму оплаты и показываем экран успешной оплаты
+            document.getElementById('payment-form').classList.add('d-none');
+            const successContainer = document.getElementById('success-container');
+            successContainer.classList.remove('d-none');
+            
+            // Анимация конфетти
+            createConfetti();
+            
+            // Добавляем параметр успешной оплаты в URL для возврата на главную страницу
+            const redirectUrl = new URL('/', window.location.origin);
+            redirectUrl.searchParams.append('payment_success', 'true');
+            redirectUrl.searchParams.append('sessionId', sessionId);
+            
+            // Обновляем ссылку на главную страницу
+            document.querySelector('#success-container a.btn').href = redirectUrl.toString();
+        }
+        
+        // Функция для показа/скрытия индикатора загрузки
+        function showLoading(show = true) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (show) {
+                loadingOverlay.classList.add('show');
+                // Сбрасываем прогресс бар при каждом новом показе
+                updateProgressBar(0);
+            } else {
+                loadingOverlay.classList.remove('show');
+            }
+        }
+        
+        // Функция создания эффекта конфетти
+        function createConfetti() {
+            const colors = ['#d4a373', '#4bb71b', '#ffd166', '#ef476f', '#118ab2'];
+            const container = document.getElementById('success-container');
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animation = 'confettiFall 3s forwards';
+                container.appendChild(confetti);
+            }
+            
+            // Убираем конфетти через 5 секунд
+            setTimeout(() => {
+                const confettiElements = document.querySelectorAll('.confetti');
+                confettiElements.forEach(elem => {
+                    elem.remove();
+                });
+            }, 5000);
+        }
+        
+        // Обрабатываем события обновления статуса оплаты от сервера
+        socket.on('payment-status-changed', function(data) {
+            console.log('Получено обновление статуса платежа:', data);
+            
+            // Если статус "completed", показываем экран успешной оплаты
+            if (data.status === 'completed') {
+                // Получаем информацию о книге, если она не была загружена раньше
+                if (!bookTitle || bookTitle === 'Загрузка данных...') {
+                    fetch(`/api/books`)
+                        .then(response => response.json())
+                        .then(booksData => {
+                            if (booksData.success && booksData.books) {
+                                // Находим информацию о книге по bookId из data
+                                const book = booksData.books.find(b => b.id === data.bookId);
+                                if (book) {
+                                    // Обновляем значения переменных перед вызовом showPaymentSuccess
+                                    document.getElementById('book-title').textContent = book.title;
+                                    if (book.price) {
+                                        document.getElementById('book-price').textContent = `Бағасы: ${book.price} ₸`;
+                                    }
+                                    // Устанавливаем bookTitle для использования в showPaymentSuccess
+                                    window.bookTitle = book.title;
+                                    // Показываем анимацию успешной оплаты
+                                    showPaymentSuccess();
+                                } else {
+                                    // Если книга не найдена, все равно показываем анимацию с общим сообщением
+                                    window.bookTitle = "Кітап";
+                                    showPaymentSuccess();
+                                }
+                            } else {
+                                // Если не удалось получить данные о книгах, показываем общее сообщение
+                                window.bookTitle = "Кітап";
+                                showPaymentSuccess();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Ошибка при получении информации о книге:', error);
+                            // В случае ошибки все равно показываем анимацию
+                            window.bookTitle = "Кітап";
+                            showPaymentSuccess();
+                        });
+                } else {
+                    // Если данные о книге уже есть, просто показываем анимацию
+                    showPaymentSuccess();
+                }
+            }
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
