@@ -551,11 +551,26 @@ server.listen(PORT, async () => {
         try {
             const url = await ngrok.connect({
                 addr: PORT,
-                proto: 'http'
+                proto: 'http',
+                onStatusChange: status => {
+                    console.log(`Статус ngrok: ${status}`);
+                },
+                onLogEvent: data => {
+                    console.log(`Лог ngrok: ${data}`);
+                }
             });
             console.log(`Публичный URL ngrok: ${url}`);
         } catch (err) {
             console.error('Ошибка при создании туннеля ngrok:', err);
+            
+            // Попробуем альтернативный способ запуска ngrok
+            try {
+                console.log('Пробуем альтернативный способ запуска ngrok...');
+                const url = await ngrok.connect(PORT);
+                console.log(`Публичный URL ngrok (альтернативный способ): ${url}`);
+            } catch (altErr) {
+                console.error('Альтернативный способ тоже не сработал:', altErr);
+            }
         }
     }
 });
