@@ -5,7 +5,23 @@ const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const os = require('os');
-const ngrok = require('ngrok');
+let ngrok;
+
+// Пробуем загрузить ngrok и настраиваем токен
+try {
+    ngrok = require('ngrok');
+    // Настройка автотокена для ngrok
+    const NGROK_AUTH_TOKEN = '2nC0WF6hn74rE8ZN9jolMFzBfMe_5gRf29BPop9EUQgnmYTBX'; // Замените на ваш токен ngrok
+    if (NGROK_AUTH_TOKEN && NGROK_AUTH_TOKEN !== 'ваш_токен_ngrok_здесь') {
+        ngrok.authtoken(NGROK_AUTH_TOKEN)
+            .then(() => console.log('Ngrok токен успешно установлен'))
+            .catch(err => console.error('Ошибка при установке токена ngrok:', err));
+    } else {
+        console.log('Автотокен ngrok не настроен. Для настройки замените значение NGROK_AUTH_TOKEN');
+    }
+} catch (error) {
+    console.log('Не удалось загрузить модуль ngrok, внешний URL не будет создан');
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -529,48 +545,4 @@ server.listen(PORT, async () => {
     if (localIp !== 'localhost') {
         console.log(`Доступен в локальной сети: http://${localIp}:${PORT}`);
     }
-
-    // Пробуем запустить ngrok только если это необходимо для внешнего доступа
-    try {
-        // Проверяем доступность ngrok API перед подключением
-        const ngrokAvailable = await checkNgrokAvailability();
-        
-        if (ngrokAvailable) {
-            const url = await ngrok.connect(PORT);
-            console.log(`Публичный URL через ngrok: ${url}`);
-        } else {
-            console.log('ngrok недоступен. Внешний URL не создан.');
-        }
-    } catch (err) {
-        console.log('ngrok не используется. Сервер доступен только локально.');
-        // Продолжаем работу сервера без ngrok
-    }
 });
-
-// Функция для проверки доступности ngrok API
-async function checkNgrokAvailability() {
-    try {
-        // Пытаемся сделать запрос к API ngrok, чтобы проверить его доступность
-        const http = require('http');
-        
-        return new Promise((resolve) => {
-            const req = http.request({
-                host: '127.0.0.1',
-                port: 4040,
-                path: '/api/tunnels',
-                method: 'GET',
-                timeout: 1000 // короткий таймаут
-            }, () => {
-                resolve(true); // Если запрос прошел, ngrok доступен
-            });
-            
-            req.on('error', () => {
-                resolve(false); // При любой ошибке считаем ngrok недоступным
-            });
-            
-            req.end();
-        });
-    } catch (error) {
-        return false;
-    }
-}
