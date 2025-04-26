@@ -545,4 +545,17 @@ server.listen(PORT, async () => {
     if (localIp !== 'localhost') {
         console.log(`Доступен в локальной сети: http://${localIp}:${PORT}`);
     }
+    
+    // Создаем туннель ngrok, если модуль доступен
+    if (ngrok) {
+        try {
+            const url = await ngrok.connect({
+                addr: PORT,
+                proto: 'http'
+            });
+            console.log(`Публичный URL ngrok: ${url}`);
+        } catch (err) {
+            console.error('Ошибка при создании туннеля ngrok:', err);
+        }
+    }
 });
